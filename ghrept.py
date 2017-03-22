@@ -12,8 +12,9 @@ Usage:
 # libs
 import os
 import sys
-import twitter
 import fire
+import twitter
+import slackclient
 
 # constants
 DOMAIN = 'userstream.twitter.com'
@@ -55,12 +56,10 @@ class GHRePT(object):
                     print '{0}\n'.format(tweet['text'].encode('utf-8'))
                 except KeyError:
                     print 'Skipping Header Info'
-                except:
-                    print 'Error occured :|'
         except KeyboardInterrupt:
             sys.exit('\n\nHalting Twitter Stream :)\n')
 
-    def test_api(self):
+    def test_twitter_api(self):
         """Get tweets from home timeline stream."""
         # print
         self._tweet_text_stream()
