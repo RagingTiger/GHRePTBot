@@ -8,10 +8,16 @@ Usage: tokens
 """
 
 # libs
+import sys
 import webbrowser
 
 
 # globals
+MSG_USER = '''
+A webbrowser has been opened to the following address: apps.twitter.com. Please
+check the README.md file for info on how to copy/paste tokens from the web page
+to the terminal.
+'''
 TOKEN_FILE = './.twitter_tokens'
 TOKEN_URL = 'http://apps.twitter.com'
 TOKEN_NAMES = ('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET',
@@ -23,10 +29,16 @@ def get_tokens():
     # token dict
     tokens = {}
 
+    # notify user
+    print MSG_USER
+
     # get input
-    for toke in TOKEN_NAMES:
-        # prompt user
-        tokens[toke] = raw_input('{0}: '.format(toke)).strip()
+    try:
+        for toke in TOKEN_NAMES:
+            # prompt user
+            tokens[toke] = raw_input('{0}: '.format(toke)).strip()
+    except KeyboardInterrupt:
+        sys.exit('\n\nAborting token file configuration\n')
 
     # return tokens
     return tokens
