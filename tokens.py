@@ -26,6 +26,7 @@ TOKEN_NAMES = ('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET',
 
 # funcs
 def get_tokens():
+    """Prompt user interactively for Twitter tokens."""
     # token dict
     tokens = {}
 
@@ -45,6 +46,7 @@ def get_tokens():
 
 
 def write_token_file(token_dict):
+    """Write out token values to a hidden file."""
     # write token file
     with open(TOKEN_FILE, 'w') as tokefile:
         for key, value in token_dict.iteritems():
@@ -52,6 +54,7 @@ def write_token_file(token_dict):
 
 
 def main():
+    """Main function to execute setup of token file."""
     # open webbrowser
     webbrowser.open(TOKEN_URL)
 
