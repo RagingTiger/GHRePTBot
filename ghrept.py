@@ -4,7 +4,9 @@
 Author: John D. Anderson
 Email: jander43@vols.utk.edu
 Description: "grep"-ing for GitHub Repos Posted on Twitter
-Usage: ghrept [stream]
+Usage:
+    ghrept
+    ghrept test-api
 """
 
 # libs
@@ -52,14 +54,16 @@ class GHRePT(object):
                 try:
                     print '{0}\n'.format(tweet['text'].encode('utf-8'))
                 except KeyError:
-                    print 'Key error :|'
+                    print 'Skipping Header Info'
+                except:
+                    print 'Error occured :|'
         except KeyboardInterrupt:
             sys.exit('\n\nHalting Twitter Stream :)\n')
 
     def test_api(self):
         """Get tweets from home timeline stream."""
         # print
-        self._tweet_text_stream
+        self._tweet_text_stream()
 
 
 # executable
