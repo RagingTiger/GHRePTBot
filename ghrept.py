@@ -6,7 +6,10 @@ Email: jander43@vols.utk.edu
 Description: "grep"-ing for GitHub Repos Posted on Twitter
 Usage:
     ghrept
-    ghrept test-api
+    ghrept filter
+    ghrept configure
+    ghrept test-twitter-api
+    ghrept test-slack-api
 """
 
 # libs
@@ -43,7 +46,7 @@ class FilterConfig(object):
     """Class to implement reading of FILTER_CONFIG file."""
     def __init__(self, config):
         # read in config file
-        self.config_dict = self._read_config(config)
+        self.dict = self._read_config(config)
 
     def _read_config(self, infile):
         """Method to read in config file."""
@@ -113,22 +116,30 @@ class GHRePTBot(object):
     """Class to implement GHRePT methods for CLI and automation."""
     def __init__(self):
         # get twitter client
-        self._twitter_feed = TwitterGHRePT()
+        self._twitter_feed = None
 
         # get slack client
-        self._slack = SlackGHRePT()
+        self._slack = None
 
     def filter(self, configfile=FILTER_CONFIG):
         """Simple method to filter and post tweets."""
+        # get twitter auth
+        self._twitter_feed = TwitterGHRePT()
+
         # get config file
         filter_config = FilterConfig(configfile)
 
-        if filter_config.config_dict:
+        if 'slack' in filter_config.dict:
+            # # get slack auth
+            # self._slack = SlackGHRePT()
+            # TODO
+
             # try to load it
-            print filter_config.config_dict
-        else:
-            # file was not found
-            pass
+            print filter_config.dict['slack']
+
+        if 'twitter' in filter_config.dict:
+            # print
+            print filter_config.dict['twitter']
 
         # # dict of filter functions
         # tweet_filters = {}
@@ -144,7 +155,12 @@ class GHRePTBot(object):
     def test_twitter_api(self):
         """Get tweets from home timeline stream."""
         # print
-        self._twitter_feed.tweet_text_stream()
+        TwitterGHRePT().tweet_text_stream()
+
+    def test_slack_api(self):
+        """Post test message to Slack."""
+        # TODO
+        pass
 
 
 # executable
