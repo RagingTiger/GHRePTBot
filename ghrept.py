@@ -17,9 +17,6 @@ import twitter
 import termcolor
 import slackclient
 
-# constants
-DOMAIN = 'userstream.twitter.com'
-
 
 # funcs
 def colortxt(cval, text):
@@ -39,8 +36,11 @@ class TwitterGHRePT(object):
         # get OAuth
         oauth = self._twitter_oauth()
 
+        # set domain
+        domain = 'userstream.twitter.com'
+
         # get Twitter instance
-        self._tw_instance = twitter.TwitterStream(auth=oauth, domain=DOMAIN)
+        self._tw_instance = twitter.TwitterStream(auth=oauth, domain=domain)
 
     def _twitter_oauth(self):
         """Creating dict of environment variables for Twitter OAuth."""
