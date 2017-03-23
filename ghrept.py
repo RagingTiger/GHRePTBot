@@ -19,9 +19,19 @@ import slackclient
 
 
 # funcs
-def colortxt(cval, text):
+def colortxt(text, cval='yellow'):
     """Simple wrapper func for termcolor.colored() method."""
-    return '{0}\n'.format(termcolor.colored(text, cval))
+    print '{0}\n'.format(termcolor.colored(text, cval))
+
+
+def filter_wrap(func_list):
+    """Wrapper func for list of functions to be used on Tweet filtering."""
+    def wrapped_func(data):
+        for func in func_list:
+            func(data)
+
+    # get new func
+    return wrapped_func
 
 
 # classes
@@ -59,17 +69,21 @@ class TwitterGHRePT(object):
         return twitter.OAuth(toked['TAT'], toked['TATS'], toked['TCK'],
                              toked['TCS'])
 
-    def tweet_text_stream(self):
+    def tweet_text_stream(self, func=colortxt):
         """Get the actual content of the tweet, and no meta info."""
         # loop
         try:
+            # announce start
+            colortxt('Twitter Stream Started :)', 'green')
+            # loop over stream
             for tweet in self._tw_instance.user():
                 try:
-                    print colortxt('yellow', tweet['text'].encode('utf-8'))
+                    func(tweet['text'].encode('utf-8'))
                 except KeyError:
-                    print colortxt('green', 'Skipping Header Info')
+                    colortxt('Data {0} Skipped'.format(tweet.keys()), 'green')
+        # exit on Ctrl-C
         except KeyboardInterrupt:
-            sys.exit(colortxt('red', '\n\nHalting Twitter Stream :)'))
+            sys.exit(colortxt('\n\nHalting Twitter Stream :(', 'red'))
 
 
 class GHRePTBot(object):
@@ -79,6 +93,21 @@ class GHRePTBot(object):
         self._twitter_feed = TwitterGHRePT()
 
         # get slack client
+        pass
+
+    def filter(self, config=None):
+        """Simple method to filter and post tweets."""
+        # list of filter functions
+        tweet_filters = []
+
+        # TODO
+        pass
+
+    def configure(self):
+        """Method to configure tokens or filter settings."""
+        # TODO
+        pass
+
     def test_twitter_api(self):
         """Get tweets from home timeline stream."""
         # print
