@@ -13,9 +13,13 @@ Usage:
 import os
 import sys
 import fire
+import json
 import twitter
 import termcolor
 import slackclient
+
+# globals
+FILTER_CONFIG = '.filterconfig.json'
 
 
 # funcs
@@ -35,6 +39,25 @@ def filter_wrap(func_list):
 
 
 # classes
+class FilterConfig(object):
+    """Class to implement reading of FILTER_CONFIG file."""
+    def __init__(self, config):
+        # read in config file
+        self.config_dict = self._read_config(config)
+
+    def _read_config(self, infile):
+        """Method to read in config file."""
+        # try reading
+        try:
+            with open(infile, 'r') as configfile:
+                output = json.loads(configfile.read())
+        except IOError:
+            output = None
+
+        # finish
+        return output
+
+
 class SlackGHRePT(object):
     """Class to implement a basic Slack client for use with GHRePTBot."""
     pass
@@ -93,15 +116,25 @@ class GHRePTBot(object):
         self._twitter_feed = TwitterGHRePT()
 
         # get slack client
-        pass
+        self._slack = SlackGHRePT()
 
-    def filter(self, config=None):
+    def filter(self, configfile=FILTER_CONFIG):
         """Simple method to filter and post tweets."""
-        # list of filter functions
-        tweet_filters = []
+        # get config file
+        filter_config = FilterConfig(configfile)
 
-        # TODO
-        pass
+        if filter_config.config_dict:
+            # try to load it
+            print filter_config.config_dict
+        else:
+            # file was not found
+            pass
+
+        # # dict of filter functions
+        # tweet_filters = {}
+        #
+        # # TODO
+        # pass
 
     def configure(self):
         """Method to configure tokens or filter settings."""
