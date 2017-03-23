@@ -14,15 +14,27 @@ import os
 import sys
 import fire
 import twitter
+import termcolor
 import slackclient
 
 # constants
 DOMAIN = 'userstream.twitter.com'
 
 
+# funcs
+def colortxt(cval, text):
+    """Simple wrapper func for termcolor.colored() method."""
+    return '{0}\n'.format(termcolor.colored(text, cval))
+
+
 # classes
-class GHRePT(object):
-    """Class to implement GHRePT protocols."""
+class SlackGHRePT(object):
+    """Class to implement a basic Slack client for use with GHRePTBot."""
+    pass
+
+
+class TwitterGHRePT(object):
+    """Class to implement a basic Twitter client for use with GHRePTBot."""
     def __init__(self):
         # get OAuth
         oauth = self._twitter_oauth()
@@ -47,26 +59,34 @@ class GHRePT(object):
         return twitter.OAuth(toked['TAT'], toked['TATS'], toked['TCK'],
                              toked['TCS'])
 
-    def _tweet_text_stream(self):
+    def tweet_text_stream(self):
         """Get the actual content of the tweet, and no meta info."""
         # loop
         try:
             for tweet in self._tw_instance.user():
                 try:
-                    print '{0}\n'.format(tweet['text'].encode('utf-8'))
+                    print colortxt('yellow', tweet['text'].encode('utf-8'))
                 except KeyError:
-                    print 'Skipping Header Info'
+                    print colortxt('green', 'Skipping Header Info')
         except KeyboardInterrupt:
-            sys.exit('\n\nHalting Twitter Stream :)\n')
+            sys.exit(colortxt('red', '\n\nHalting Twitter Stream :)'))
 
+
+class GHRePTBot(object):
+    """Class to implement GHRePT methods for CLI and automation."""
+    def __init__(self):
+        # get twitter client
+        self._twitter_feed = TwitterGHRePT()
+
+        # get slack client
     def test_twitter_api(self):
         """Get tweets from home timeline stream."""
         # print
-        self._tweet_text_stream()
+        self._twitter_feed.tweet_text_stream()
 
 
 # executable
 if __name__ == '__main__':
 
     # get fire instance
-    fire.Fire(GHRePT)
+    fire.Fire(GHRePTBot)
