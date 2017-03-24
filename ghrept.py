@@ -72,7 +72,22 @@ class FilterConfig(object):
 
 class SlackGHRePT(object):
     """Class to implement a basic Slack client for use with GHRePTBot."""
-    pass
+    def __init__(self):
+        # get token
+        slk_token = self._slack_token()
+
+        # get Slack instance
+        self._slk_instance = slackclient.SlackClient(slk_token)
+
+    def _slack_token(self):
+        """Authorize bot to access Slack team."""
+        return os.environ.get('SLACK_API_TOKEN')
+
+    def post_msg(self, msg, channel):
+        """Post msg to a Slack channel."""
+        # send message
+        self._slk_instance.api_call('chat.postMessage',
+                                    channel='#{0}'.format(channel), text=msg)
 
 
 class TwitterGHRePT(object):
@@ -128,7 +143,7 @@ class GHRePTBot(object):
         self._twitter_feed = None
 
         # get slack client
-        self._slack = None
+        self._slack_feed = None
 
     def help(self, slack=None, twitter=None, stdout=None):
         """Help method for GHRePTBot. Prints usage on default."""
@@ -144,7 +159,7 @@ class GHRePTBot(object):
 
         if 'slack' in filter_config.dict:
             # # get slack auth
-            # self._slack = SlackGHRePT()
+            # self._slack_feed = SlackGHRePT()
             # TODO
 
             # try to load it
@@ -167,13 +182,13 @@ class GHRePTBot(object):
 
     def test_twitter_api(self):
         """Get tweets from home timeline stream."""
-        # print
+        # start client
         TwitterGHRePT().tweet_text_stream()
 
-    def test_slack_api(self):
+    def test_slack_api(self, msg="Test message from GHRePTBot"):
         """Post test message to Slack."""
-        # TODO
-        pass
+        # post
+        SlackGHRePT().post_msg(msg, 'general')
 
 
 # executable
