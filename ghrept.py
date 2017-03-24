@@ -86,7 +86,7 @@ class SlackGHRePT(object):
     def post_msg(self, msg, channel):
         """Post msg to a Slack channel."""
         # send message
-        self._slk_instance.api_call('chat.postMessage',
+        self._slk_instance.api_call('chat.postMessage', as_user='true',
                                     channel='#{0}'.format(channel), text=msg)
 
 
@@ -185,10 +185,10 @@ class GHRePTBot(object):
         # start client
         TwitterGHRePT().tweet_text_stream()
 
-    def test_slack_api(self, msg="Test message from GHRePTBot"):
+    def test_slack_api(self, msg="GHRePTBot Test Message", channel='general'):
         """Post test message to Slack."""
         # post
-        SlackGHRePT().post_msg(msg, 'general')
+        SlackGHRePT().post_msg(msg, channel)
 
 
 # executable
