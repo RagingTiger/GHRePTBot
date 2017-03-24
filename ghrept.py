@@ -26,6 +26,15 @@ FILTER_CONFIG = '.filterconfig.json'
 
 
 # funcs
+def highlight(text, word, hval='red'):
+    """Takes in Tweet text and highlights the filtered word."""
+    # color paragraphs
+    colored_text = termcolor.colored(text, 'yellow')
+
+    # highlight
+    return colored_text.format('\x1b[31m{0}\x1b[33m'.format(word))
+
+
 def colortxt(text, cval='yellow'):
     """Simple wrapper func for termcolor.colored() method."""
     print '{0}\n'.format(termcolor.colored(text, cval))
@@ -120,6 +129,10 @@ class GHRePTBot(object):
 
         # get slack client
         self._slack = None
+
+    def help(self, slack=None, twitter=None, stdout=None):
+        """Help method for GHRePTBot. Prints usage on default."""
+        pass
 
     def filter(self, configfile=FILTER_CONFIG):
         """Simple method to filter and post tweets."""
