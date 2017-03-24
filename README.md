@@ -58,5 +58,5 @@ source .twitter_tokens
 Now you should be ready to launch the **Twitter client**:
 
 ```
-./ghrept.py test-api
+./ghrept.py test-twitter-api
 ```
