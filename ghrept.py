@@ -13,6 +13,7 @@ Usage:
 """
 
 # libs
+import re
 import os
 import sys
 import fire
@@ -26,13 +27,24 @@ FILTER_CONFIG = '.filterconfig.json'
 
 
 # funcs
-def highlight(text, word, hval='red'):
+def highlight(text, word_list):
     """Takes in Tweet text and highlights the filtered word."""
-    # color paragraphs
-    colored_text = termcolor.colored(text, 'yellow')
+    # lower, sort, and reverse word_list (for regex reasons)
+    word_list = [w.lower() for w in word_list]
+    word_list.sort(reverse=True)
 
-    # highlight
-    return colored_text.format('\x1b[31m{0}\x1b[33m'.format(word))
+    # get list of all matches
+    match_exp = re.compile('|'.join(word_list), flags=re.I)
+    match_list = match_exp.findall(text)
+
+    # loop over matches
+    for match in match_list:
+        # highlight words
+        text = re.sub(r'\b{0}\b'.format(match),
+                      '\x1b[31m{0}\x1b[33m'.format(match), text)
+
+    # get highlighted text
+    return termcolor.colored(text, 'yellow')
 
 
 def colortxt(text, cval='yellow'):
@@ -172,6 +184,9 @@ class GHRePTBot(object):
         if 'twitter' in filter_config.dict:
             # print
             print filter_config.dict['twitter']
+
+        if 'stdout' in filter_config.dict:
+            pass
 
         # # dict of filter functions
         # tweet_filters = {}
