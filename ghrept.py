@@ -85,6 +85,10 @@ class SlackGHRePT(object):
 
     def post_msg(self, msg, channel):
         """Post msg to a Slack channel."""
+        # check for pound char
+        if len(channel.split('#')) == 2:
+            channel = channel.split('#')[1]
+
         # send message
         self._slk_instance.api_call('chat.postMessage', as_user='true',
                                     channel='#{0}'.format(channel), text=msg)
