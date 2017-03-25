@@ -27,14 +27,18 @@ FILTER_CONFIG = '.filterconfig.json'
 
 
 # funcs
-def highlight(text, word_list):
+def compile_regex(words):
+    return re.compile('|'.join(words), flags=re.I)
+
+
+def tweet_highlight(text, word_list):
     """Takes in Tweet text and highlights the filtered word."""
     # lower, sort, and reverse word_list (for regex reasons)
     word_list = [w.lower() for w in word_list]
     word_list.sort(reverse=True)
 
     # get list of all matches
-    match_exp = re.compile('|'.join(word_list), flags=re.I)
+    match_exp = compile_regex(word_list)
     match_list = match_exp.findall(text)
 
     # loop over matches
@@ -44,7 +48,7 @@ def highlight(text, word_list):
                       '\x1b[31m{0}\x1b[33m'.format(match), text)
 
     # get highlighted text
-    return termcolor.colored(text, 'yellow')
+    print termcolor.colored(text, 'yellow')
 
 
 def colortxt(text, cval='yellow'):
@@ -52,22 +56,40 @@ def colortxt(text, cval='yellow'):
     print '{0}\n'.format(termcolor.colored(text, cval))
 
 
-def filter_wrap(func_list):
+def twitter_filters(func_list):
     """Wrapper func for list of functions to be used on Tweet filtering."""
-    def wrapped_func(data):
+    def wrapped_func(tweet):
         for func in func_list:
-            func(data)
+            func(tweet)
 
     # get new func
     return wrapped_func
+
+
+def match_wrapper(regex, words, outlet):
+    """Store args with function and return."""
+    def match_word(tweet):
+        # check if word in text
+        if regex.match(tweet, re.I):
+            outlet(tweet, words)
+        elif debug:
+            colortxt(tweet)
+    # return wrapped matcher
+    return match_word
 
 
 # classes
 class FilterConfig(object):
     """Class to implement reading of FILTER_CONFIG file."""
     def __init__(self, config):
+        # get twitter client
+        self._twitter_feed = None
+
+        # get slack client
+        self._slack_feed = None
+
         # read in config file
-        self.dict = self._read_config(config)
+        self.filter_config = self._read_config(config)
 
     def _read_config(self, infile):
         """Method to read in config file."""
@@ -80,6 +102,50 @@ class FilterConfig(object):
 
         # finish
         return output
+
+    def _setup_filters(self):
+        """Get list of all the filters and outlets you will be using."""
+        # start up Twitter OAuth
+        self._twitter_feed = TwitterGHRePT()
+
+        # list of filters
+        filter_list = []
+
+        # check loaded file
+        if 'twitter' in filter_config:
+            # # make sure entry for stdout is type dict
+            # fwords = filter_config['twitter']
+            # if type(fwords) is dict:
+            # TODO
+            print self.filter_config['twitter']
+
+        if 'stdout' in filter_config:
+            # make sure entry for stdout is type list
+            fwords = filter_config['stdout']
+            if type(fwords) is list:
+                # get regex
+                regex = compile_regex(fwords)
+
+                # get match func
+                filter_list.append(match_wrapper(regex, fwords,
+                                                 tweet_highlight))
+
+        if 'slack' in self.filter_config:
+            # # get slack auth
+            # self._slack_feed = SlackGHRePT()
+            # TODO
+            print self.filter_config['slack']
+
+        # return list of filter funcs
+        return filter_list
+
+    def filter_tweets(self):
+        """Startup Twitter stream and filter."""
+        # get list of filter functions from filter config file
+        filter_funcs = twitter_filters(self._setup_filters())
+
+        # pass filters func to Twitter stream
+        self._twitter_feed.tweet_text_stream(filter_funcs)
 
 
 class SlackGHRePT(object):
@@ -140,7 +206,7 @@ class TwitterGHRePT(object):
         # loop
         try:
             # announce start
-            colortxt('Twitter Stream Started :)', 'green')
+            colortxt('Twitter Stream Started', 'green')
             # loop over stream
             for tweet in self._tw_instance.user():
                 try:
@@ -155,11 +221,8 @@ class TwitterGHRePT(object):
 class GHRePTBot(object):
     """Class to implement GHRePT methods for CLI and automation."""
     def __init__(self):
-        # get twitter client
-        self._twitter_feed = None
-
-        # get slack client
-        self._slack_feed = None
+        # TODO
+        colortxt('GHRePTBot Started', 'green')
 
     def help(self, slack=None, twitter=None, stdout=None):
         """Help method for GHRePTBot. Prints usage on default."""
@@ -167,32 +230,11 @@ class GHRePTBot(object):
 
     def filter(self, configfile=FILTER_CONFIG):
         """Simple method to filter and post tweets."""
-        # get twitter auth
-        self._twitter_feed = TwitterGHRePT()
-
         # get config file
-        filter_config = FilterConfig(configfile)
+        ghrept_filter = FilterConfig(configfile)
 
-        if 'slack' in filter_config.dict:
-            # # get slack auth
-            # self._slack_feed = SlackGHRePT()
-            # TODO
-
-            # try to load it
-            print filter_config.dict['slack']
-
-        if 'twitter' in filter_config.dict:
-            # print
-            print filter_config.dict['twitter']
-
-        if 'stdout' in filter_config.dict:
-            pass
-
-        # # dict of filter functions
-        # tweet_filters = {}
-        #
-        # # TODO
-        # pass
+        # run
+        ghrept_filter.filter_tweets()
 
     def configure(self):
         """Method to configure tokens or filter settings."""
