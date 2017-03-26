@@ -39,7 +39,7 @@ TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
 
 # funcs
 def compile_regex(words):
-    # add word blocks
+    """Adds word boundaries and returns compiled regex."""
     blocks = [r'\b{0}\b'.format(w) for w in words]
     return re.compile('|'.join(blocks), flags=re.I)
 
