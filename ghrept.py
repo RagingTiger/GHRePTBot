@@ -24,16 +24,17 @@ import slackclient
 
 # globals
 BANNER = '''
-             _____  _   _ ______    ______ ___________       _
-            |  __ \| | | || ___ \   | ___ \_   _| ___ \     | |
-            | |  \/| |_| || |_/ /___| |_/ / | | | |_/ / ___ | |_
-            | | __ |  _  ||    // _ \  __/  | | | ___ \/ _ \| __|
-            | |_\ \| | | || |\ \  __/ |     | | | |_/ / (_) | |_
-             \____/\_| |_/\_| \_\___\_|     \_/ \____/ \___/ \__|
+                _____  _   _ ______    ______ ___________       _
+               |  __ \| | | || ___ \   | ___ \_   _| ___ \     | |
+               | |  \/| |_| || |_/ /___| |_/ / | | | |_/ / ___ | |_
+               | | __ |  _  ||    // _ \  __/  | | | ___ \/ _ \| __|
+               | |_\ \| | | || |\ \  __/ |     | | | |_/ / (_) | |_
+                \____/\_| |_/\_| \_\___\_|     \_/ \____/ \___/ \__|
 '''
 FILTER_CONFIG = '.filterconfig.json'
 TW_TOKENS = '.twitter_tokens'
 SLK_TOKENS = '.slack_tokens'
+TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
 
 
 # funcs
@@ -235,7 +236,7 @@ class TwitterGHRePT(object):
         # loop
         try:
             # announce start
-            colortxt('Twitter Stream Started', 'green')
+            colortxt(TSTRM_MSG.format('Started', ''), 'green')
             # loop over stream
             for tweet in self._tw_instance.user():
                 try:
@@ -244,7 +245,7 @@ class TwitterGHRePT(object):
                     colortxt('Data {0} Skipped'.format(tweet.keys()), 'green')
         # exit on Ctrl-C
         except KeyboardInterrupt:
-            sys.exit(colortxt('\n\nHalting Twitter Stream :(', 'red'))
+            sys.exit(colortxt(TSTRM_MSG.format('Stopped', '\n\n'), 'red'))
 
 
 class GHRePTBot(object):
