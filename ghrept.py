@@ -80,7 +80,7 @@ def twitter_filters(func_list):
 
 
 def match_wrapper(regex, words, outlet, debug=False):
-    """Store args with function and return."""
+    """Create custom match function with outlet specific regex."""
     def match_word(tweet):
         # check if word in text
         if regex.search(tweet):
@@ -136,7 +136,7 @@ class FilterStream(object):
     def _setup_filters(self):
         """Get list of all the filters and outlets you will be using."""
         # start up Twitter OAuth
-        self._twitter_feed = TwitterGHRePT()
+        self._twitter_feed = TwitterApp()
 
         # list of filters
         filter_list = []
@@ -161,10 +161,22 @@ class FilterStream(object):
                                                  tweet_highlight, self._debug))
 
         if 'slack' in self.filter_config:
-            # # get slack auth
-            # self._slack_feed = SlackGHRePT()
-            # TODO
-            print self.filter_config['slack']
+            # makae sure entry for slack is type dict
+            fwords = self.filter_config['slack']
+            if type(fwords) is dict:
+                # get slack auth
+                self._slack_feed = SlackApp()
+
+                # get keys from dict
+                key_words = fwords.keys()
+
+                # get regex
+                regex = compile_regex(key_words)
+
+                # get match func
+                filter_list.append(match_wrapper(regex, fwords,
+                                                 self._slack_feed.slack_match,
+                                                 self._debug))
 
         # return list of filter funcs
         return filter_list
@@ -178,7 +190,7 @@ class FilterStream(object):
         self._twitter_feed.tweet_text_stream(filter_funcs)
 
 
-class SlackGHRePT(object):
+class SlackApp(object):
     """Class to implement a basic Slack client for use with GHRePTBot."""
     def __init__(self):
         # get token
@@ -201,8 +213,18 @@ class SlackGHRePT(object):
         self._slk_instance.api_call('chat.postMessage', as_user='true',
                                     channel='#{0}'.format(channel), text=msg)
 
+    def slack_match(self, text, word_dict):
+        """Match words from word_dict to text, and send to channel."""
+        # get keys from dict
+        key_words = word_dict.keys()
 
-class TwitterGHRePT(object):
+        # sort in reverse
+        key_words.sort(reverse=True)
+
+        # get regex
+
+
+class TwitterApp(object):
     """Class to implement a basic Twitter client for use with GHRePTBot."""
     def __init__(self):
         # get OAuth
@@ -287,12 +309,12 @@ class GHRePTBot(object):
     def test_twitter_api(self):
         """Get tweets from home timeline stream."""
         # start client
-        TwitterGHRePT().tweet_text_stream()
+        TwitterApp().tweet_text_stream()
 
     def test_slack_api(self, msg="GHRePTBot Test Message", channel='general'):
         """Post test message to Slack."""
         # post
-        SlackGHRePT().post_msg(msg, channel)
+        SlackApp().post_msg(msg, channel)
 
     def test_highlight(self, text):
         # words to match
