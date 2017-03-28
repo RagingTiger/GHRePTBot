@@ -115,6 +115,57 @@ class ConfigFilter(object):
         pass
 
 
+class TerminalOut(object):
+    """Builds filter function for filtering tweets to stdout."""
+    def __init__(self, match_words, debug):
+        # store debug flag
+        self.debug = debug
+
+        # store match words to filter on
+        self.mwords = match_words
+
+        # get regex
+        self.regex = compile_regex(match_words)
+
+    def make_filter(self):
+        """Return a custom filter function for stdout."""
+        def match_word(tweet):
+            # check if word in text
+            if self.regex.search(tweet):
+                self.tweet_highlight(tweet, self.mwords)
+            elif self.debug:
+                colortxt(tweet, 'white')
+        # return wrapped matcher
+        return match_word
+
+    def tweet_highlight(self, text, word_list):
+        """Takes in Tweet text and highlights the filtered word."""
+        # lower, sort, and reverse word_list (for regex reasons)
+        word_list = [w.lower() for w in word_list]
+        word_list.sort(reverse=True)
+
+        # get list of all matches
+        match_exp = compile_regex(word_list)
+        match_list = match_exp.findall(text)
+
+        # loop over matches
+        for match in match_list:
+            # highlight words
+            text = re.sub(r'\b{0}\b'.format(match),
+                          '\x1b[31m{0}\x1b[33m'.format(match), text)
+
+        # get highlighted text
+        print '{0}\n'.format(termcolor.colored(text, 'yellow'))
+
+
+class SlackOut(object):
+    pass
+
+
+class TwitterOut(object):
+    pass
+
+
 class TwitterStreamFilter(object):
     """Class to implement filtering of Twitter stream"""
     def __init__(self, config, debug, filterflags):
@@ -167,12 +218,11 @@ class TwitterStreamFilter(object):
             # make sure entry for stdout is type list
             fwords = self.filter_config['stdout']
             if type(fwords) is list:
-                # get regex
-                regex = compile_regex(fwords)
+                # get stdout filter
+                stdout_filter = TerminalOut(fwords, self._debug)
 
                 # get match func
-                filter_list.append(match_wrapper(regex, fwords,
-                                                 tweet_highlight, self._debug))
+                filter_list.append(stdout_filter.make_filter())
 
         if 'slack' in self.filter_config and self._filter_flags['slack']:
             # makae sure entry for slack is type dict
