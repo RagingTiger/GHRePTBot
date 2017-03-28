@@ -140,9 +140,9 @@ class TwitterStreamFilter(object):
             with open(infile, 'r') as configfile:
                 output = json.loads(configfile.read())
         except IOError:
-            warn('File {0} not found'.format(infile))
+            warn('File {0} not found\n'.format(infile))
         except ValueError:
-            warn('Format error in filter config file')
+            warn('Format error in filter config file\n')
 
         # finish
         return output
