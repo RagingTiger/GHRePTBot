@@ -285,7 +285,9 @@ class GHRePTBot(object):
 
         # check flags
         if not any(fflags.values()):
-            sys.exit(colortxt('No filters provided', 'red'))
+            colortxt('Defaulting to stdout: '
+                     'run \'ghrept help --filter\' for more info', 'red')
+            fflags['stdout'] = True
 
         # load config file and setup sh*t
         ghrept_filter = FilterStream(configfile, True if debug else False,
