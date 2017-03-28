@@ -108,7 +108,10 @@ class ConfigFilter(object):
 
 class FilterStream(object):
     """Class to implement filtering of Twitter stream"""
-    def __init__(self, config, debug):
+    def __init__(self, config, debug, filterflags):
+        # store filterflags
+        self._filter_flags = filterflags
+
         # set debug
         self._debug = debug
 
@@ -129,6 +132,8 @@ class FilterStream(object):
                 output = json.loads(configfile.read())
         except IOError:
             sys.exit(colortxt('File {0} not found'.format(infile), 'red'))
+        except ValueError:
+            sys.exit(colortxt('Format error in filter config file', 'red'))
 
         # finish
         return output
@@ -142,14 +147,14 @@ class FilterStream(object):
         filter_list = []
 
         # check loaded file
-        if 'twitter' in self.filter_config:
+        if 'twitter' in self.filter_config and self._filter_flags['twitter']:
             # # make sure entry for stdout is type dict
             # fwords = filter_config['twitter']
             # if type(fwords) is dict:
             # TODO
             print self.filter_config['twitter']
 
-        if 'stdout' in self.filter_config:
+        if 'stdout' in self.filter_config and self._filter_flags['stdout']:
             # make sure entry for stdout is type list
             fwords = self.filter_config['stdout']
             if type(fwords) is list:
@@ -160,7 +165,7 @@ class FilterStream(object):
                 filter_list.append(match_wrapper(regex, fwords,
                                                  tweet_highlight, self._debug))
 
-        if 'slack' in self.filter_config:
+        if 'slack' in self.filter_config and self._filter_flags['slack']:
             # makae sure entry for slack is type dict
             fwords = self.filter_config['slack']
             if type(fwords) is dict:
@@ -168,15 +173,9 @@ class FilterStream(object):
                 self._slack_feed = SlackApp()
 
                 # get keys from dict
-                key_words = fwords.keys()
+                regexd = {k: compile_regex(v) for k, v in fwords.iteritems()}
 
-                # get regex
-                regex = compile_regex(key_words)
-
-                # get match func
-                filter_list.append(match_wrapper(regex, fwords,
-                                                 self._slack_feed.slack_match,
-                                                 self._debug))
+                print regexd
 
         # return list of filter funcs
         return filter_list
@@ -220,8 +219,6 @@ class SlackApp(object):
 
         # sort in reverse
         key_words.sort(reverse=True)
-
-        # get regex
 
 
 class TwitterApp(object):
@@ -280,10 +277,19 @@ class GHRePTBot(object):
         """Help method for GHRePTBot. Prints usage on default."""
         pass
 
-    def filter(self, configfile=FILTER_CONFIG, debug=False):
+    def filter(self, configfile=FILTER_CONFIG, debug=False, slack=None,
+               twitter=None, stdout=None):
         """Simple method to filter and post tweets."""
+        # create filterflags dict
+        fflags = {'slack': slack, 'twitter': twitter, 'stdout': stdout}
+
+        # check flags
+        if not any(fflags.values()):
+            sys.exit(colortxt('No filters provided', 'red'))
+
         # load config file and setup sh*t
-        ghrept_filter = FilterStream(configfile, True if debug else False)
+        ghrept_filter = FilterStream(configfile, True if debug else False,
+                                     fflags)
 
         # run
         ghrept_filter.filter_tweets()
