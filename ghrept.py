@@ -118,7 +118,10 @@ class TerminalOut(object):
 
 
 class SlackOut(object):
-    pass
+    """Builds filter function for filtering tweets to Slack."""
+    def __init__(self, match_words_dict, debug):
+        # get keys from dict
+        self.regexd = {k: compile_regex(v) for k, v in fwords.iteritems()}
 
 
 class TwitterOut(object):
@@ -194,15 +197,16 @@ class TwitterStreamFilter(object):
 
         if 'slack' in self.filter_config and self._filter_flags['slack']:
             # makae sure entry for slack is type dict
-            fwords = self.filter_config['slack']
+            fwords_dict = self.filter_config['slack']
             if type(fwords) is dict:
                 # get slack auth
                 self._slack_feed = SlackApp()
 
-                # get keys from dict
-                regexd = {k: compile_regex(v) for k, v in fwords.iteritems()}
+                # get slack filter
+                slack_filter = SlackOut(fwords_dict, self._debug)
 
-                print regexd
+                # add to func list
+                filter_list.append(slack_filter.make_filter())
 
         # return list of filter funcs
         return filter_list
