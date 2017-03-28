@@ -140,9 +140,9 @@ class TwitterStreamFilter(object):
             with open(infile, 'r') as configfile:
                 output = json.loads(configfile.read())
         except IOError:
-            sys.exit(colortxt('File {0} not found'.format(infile), 'red'))
+            warn('File {0} not found'.format(infile))
         except ValueError:
-            sys.exit(colortxt('Format error in filter config file', 'red'))
+            warn('Format error in filter config file')
 
         # finish
         return output
@@ -270,10 +270,11 @@ class TwitterApp(object):
                 try:
                     func(tweet['text'].encode('utf-8'))
                 except KeyError:
-                    colortxt('Data {0} Skipped'.format(tweet.keys()), 'green')
+                    warn('Data {0} Skipped\n'.format(tweet.keys()), 'green',
+                         False)
         # exit on Ctrl-C
         except KeyboardInterrupt:
-            sys.exit(colortxt(TSTRM_MSG.format('Stopped', '\n\n'), 'red'))
+            warn(TSTRM_MSG.format('Stopped', '\n\n'))
 
 
 class GHRePTBot(object):
@@ -294,8 +295,11 @@ class GHRePTBot(object):
 
         # check flags
         if not any(fflags.values()):
-            colortxt('Defaulting to stdout: '
-                     'run \'ghrept help --filter\' for more info', 'red')
+            # warn user
+            warn('Defaulting to stdout: '
+                 'run \'ghrept help --filter\' for more info\n', exit=False)
+
+            # stdout is on by default
             fflags['stdout'] = True
 
         # load config file and setup sh*t
