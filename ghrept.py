@@ -271,14 +271,6 @@ class SlackApp(object):
         self._slk_instance.api_call('chat.postMessage', as_user='true',
                                     channel='#{0}'.format(channel), text=msg)
 
-    def slack_match(self, text, word_dict):
-        """Match words from word_dict to text, and send to channel."""
-        # get keys from dict
-        key_words = word_dict.keys()
-
-        # sort in reverse
-        key_words.sort(reverse=True)
-
 
 class TwitterApp(object):
     """Class to implement a basic Twitter client for use with GHRePTBot."""
