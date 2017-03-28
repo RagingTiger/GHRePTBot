@@ -37,31 +37,11 @@ SLK_TOKENS = '.slack_tokens'
 TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
 
 
-# funcs
+# utility funcs
 def compile_regex(words):
     """Adds word boundaries and returns compiled regex."""
     blocks = [r'\b{0}\b'.format(w) for w in words]
     return re.compile('|'.join(blocks), flags=re.I)
-
-
-def tweet_highlight(text, word_list):
-    """Takes in Tweet text and highlights the filtered word."""
-    # lower, sort, and reverse word_list (for regex reasons)
-    word_list = [w.lower() for w in word_list]
-    word_list.sort(reverse=True)
-
-    # get list of all matches
-    match_exp = compile_regex(word_list)
-    match_list = match_exp.findall(text)
-
-    # loop over matches
-    for match in match_list:
-        # highlight words
-        text = re.sub(r'\b{0}\b'.format(match),
-                      '\x1b[31m{0}\x1b[33m'.format(match), text)
-
-    # get highlighted text
-    print '{0}\n'.format(termcolor.colored(text, 'yellow'))
 
 
 def colortxt(text, cval='yellow'):
@@ -76,28 +56,6 @@ def warn(text, cval='red', exit=True):
         sys.exit(termcolor.colored(text, cval))
     else:
         print termcolor.colored(text, cval)
-
-
-def twitter_filters(func_list):
-    """Wrapper func for list of functions to be used on Tweet filtering."""
-    def wrapped_func(tweet):
-        for func in func_list:
-            func(tweet)
-
-    # get new func
-    return wrapped_func
-
-
-def match_wrapper(regex, words, outlet, debug=False):
-    """Create custom match function with outlet specific regex."""
-    def match_word(tweet):
-        # check if word in text
-        if regex.search(tweet):
-            outlet(tweet, words)
-        elif debug:
-            colortxt(tweet, 'white')
-    # return wrapped matcher
-    return match_word
 
 
 # classes
@@ -138,7 +96,8 @@ class TerminalOut(object):
         # return wrapped matcher
         return match_word
 
-    def tweet_highlight(self, text, word_list):
+    @staticmethod
+    def tweet_highlight(text, word_list):
         """Takes in Tweet text and highlights the filtered word."""
         # lower, sort, and reverse word_list (for regex reasons)
         word_list = [w.lower() for w in word_list]
@@ -198,8 +157,17 @@ class TwitterStreamFilter(object):
         # finish
         return output
 
+    def _twitter_filters(self, func_list):
+        """Wrapper func for list of functions to be used on Tweet filtering."""
+        def wrapped_func(tweet):
+            for func in func_list:
+                func(tweet)
+
+        # get new func
+        return wrapped_func
+
     def _setup_filters(self):
-        """Get list of all the filters and outlets you will be using."""
+        """Get list of all the filter functions you will be using."""
         # start up Twitter OAuth
         self._twitter_feed = TwitterApp()
 
@@ -242,7 +210,7 @@ class TwitterStreamFilter(object):
     def filter_tweets(self):
         """Startup Twitter stream and filter."""
         # get list of filter functions from filter config file
-        filter_funcs = twitter_filters(self._setup_filters())
+        filter_funcs = self._twitter_filters(self._setup_filters())
 
         # pass filters func to Twitter stream
         self._twitter_feed.tweet_text_stream(filter_funcs)
@@ -384,7 +352,7 @@ class GHRePTBot(object):
         words = ["at", "the", "he", "she", "a", "in", "on", "with", "is"]
 
         # highlight
-        tweet_highlight(text, words)
+        TerminalOut.tweet_highlight(text, words)
 
     def test_matcher(self, text):
         # words to match
