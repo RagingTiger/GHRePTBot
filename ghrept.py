@@ -69,6 +69,15 @@ def colortxt(text, cval='yellow'):
     print '{0}\n'.format(termcolor.colored(text, cval))
 
 
+def warn(text, cval='red', exit=True):
+    """Wrapper for printing error message to stdout and exiting."""
+    # control flow
+    if exit:
+        sys.exit(termcolor.colored(text, cval))
+    else:
+        print termcolor.colored(text, cval)
+
+
 def twitter_filters(func_list):
     """Wrapper func for list of functions to be used on Tweet filtering."""
     def wrapped_func(tweet):
@@ -106,7 +115,7 @@ class ConfigFilter(object):
         pass
 
 
-class FilterStream(object):
+class TwitterStreamFilter(object):
     """Class to implement filtering of Twitter stream"""
     def __init__(self, config, debug, filterflags):
         # store filterflags
@@ -290,8 +299,8 @@ class GHRePTBot(object):
             fflags['stdout'] = True
 
         # load config file and setup sh*t
-        ghrept_filter = FilterStream(configfile, True if debug else False,
-                                     fflags)
+        debug = True if debug else False
+        ghrept_filter = TwitterStreamFilter(configfile, debug, fflags)
 
         # run
         ghrept_filter.filter_tweets()
