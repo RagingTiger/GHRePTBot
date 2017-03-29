@@ -7,7 +7,8 @@
                          "computing", "homebrew", "docker", "python3",
                          "electron", "javascriptf", "node.js", "google", "api",
                          "code", "coding", "commandline", "computer",
-                         "codejam2017", "computer science"
+                         "codejam2017", "computer science", "server", "data",
+                         "programming", "data science", "datascience"
                         ],
 
              "machinelearning": ["machinelearning", "machine learning",
@@ -28,6 +29,6 @@
              "deep learning", "bigdata", "malware", "deep", "neural nets",
              "neuralnets", "computer", "computer science", "tensorflow",
              "codejam2017", "algorithm", "data structures", "data",
-             "programming", "hacker"
+             "programming", "hacker", "server"
             ]
 }
