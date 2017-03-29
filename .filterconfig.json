@@ -10,14 +10,14 @@
                          "code", "coding", "commandline", "computer",
                          "codejam2017", "computer science", "server", "data",
                          "programming", "data science", "datascience",
-                         "internet", "sysadmin"
+                         "internet", "sysadmin", "command-line", "cli", "ruby"
              ],
 
              "machinelearning": [
                                  "machinelearning", "machine learning",
                                  "deeplearning", "deep learning", "bigdata",
-                                 "deep", "neural nets", "neuralnets",
-                                 "tensorflow", "keras", "ML"
+                                 "neural nets", "neuralnets", "tensorflow",
+                                 "keras", "ML"
             ],
 
             "hacking": [
@@ -27,7 +27,7 @@
 
             "entrepreneurship": [
                                  "tech", "entrepreneur", "business",
-                                 "technology"
+                                 "technology", "startup"
             ]
 
   },
@@ -41,6 +41,7 @@
              "deep learning", "bigdata", "malware", "deep", "neural nets",
              "neuralnets", "computer", "computer science", "tensorflow",
              "codejam2017", "algorithm", "data structures", "data",
-             "programming", "hacker", "server", "internet"
+             "programming", "hacker", "server", "internet", "command-line",
+             "cli"
             ]
 }
