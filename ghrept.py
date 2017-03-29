@@ -156,12 +156,9 @@ class TwitterOut(object):
 
 class TwitterStreamFilter(object):
     """Class to implement filtering of Twitter stream"""
-    def __init__(self, config, debug, filterflags):
+    def __init__(self, config, filterflags):
         # store filterflags
-        self._filter_flags = filterflags
-
-        # set debug
-        self._debug = debug
+        self._fflags = filterflags
 
         # get twitter client
         self._twitter_feed = None
@@ -204,29 +201,34 @@ class TwitterStreamFilter(object):
         filter_list = []
 
         # check loaded file
-        if 'twitter' in self.filter_config and self._filter_flags['twitter']:
+        if 'twitter' in self.filter_config and self._fflags['twitter']:
             # # make sure entry for stdout is type dict
             # fwords = filter_config['twitter']
             # if type(fwords) is dict:
             # TODO
             print self.filter_config['twitter']
 
-        if 'stdout' in self.filter_config and self._filter_flags['stdout']:
+        if 'stdout' in self.filter_config and self._fflags['stdout']:
             # make sure entry for stdout is type list
             fwords = self.filter_config['stdout']
             if type(fwords) is list:
+                # check debug
+                debug = True if self._fflags['stdout'] == 'debug' else False
                 # get stdout filter
-                stdout_filter = TerminalOut(fwords, self._debug)
+                stdout_filter = TerminalOut(fwords, debug)
 
                 # get match func
                 filter_list.append(stdout_filter.make_filter())
 
-        if 'slack' in self.filter_config and self._filter_flags['slack']:
+        if 'slack' in self.filter_config and self._fflags['slack']:
             # makae sure entry for slack is type dict
             fwords_dict = self.filter_config['slack']
             if type(fwords_dict) is dict:
+                # check debug
+                debug = True if self._fflags['slack'] == 'debug' else False
+
                 # get slack filter
-                slack_filter = SlackOut(fwords_dict, self._debug)
+                slack_filter = SlackOut(fwords_dict, debug)
 
                 # add to func list
                 filter_list.append(slack_filter.make_filter())
@@ -324,8 +326,8 @@ class GHRePTBot(object):
         """Help method for GHRePTBot. Prints usage on default."""
         pass
 
-    def filter(self, configfile=FILTER_CONFIG, debug=False, slack=None,
-               twitter=None, stdout=None):
+    def filter(self, configfile=FILTER_CONFIG, slack=None, twitter=None,
+               stdout=None):
         """Simple method to filter and post tweets."""
         # create filterflags dict
         fflags = {'slack': slack, 'twitter': twitter, 'stdout': stdout}
@@ -340,8 +342,7 @@ class GHRePTBot(object):
             fflags['stdout'] = True
 
         # load config file and setup sh*t
-        debug = True if debug else False
-        ghrept_filter = TwitterStreamFilter(configfile, debug, fflags)
+        ghrept_filter = TwitterStreamFilter(configfile, fflags)
 
         # run
         ghrept_filter.filter_tweets()
