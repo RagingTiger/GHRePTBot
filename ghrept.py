@@ -119,9 +119,35 @@ class TerminalOut(object):
 
 class SlackOut(object):
     """Builds filter function for filtering tweets to Slack."""
-    def __init__(self, match_words_dict, debug):
+    def __init__(self, fwords, debug):
+        # store slack app
+        self.slack_app = SlackApp()
+
+        # store debug flag
+        self.debug = debug
+
         # get keys from dict
-        self.regexd = {k: compile_regex(v) for k, v in fwords.iteritems()}
+        self.regexdict = {k: compile_regex(v) for k, v in fwords.iteritems()}
+
+    def make_filter(self):
+        """Return a custom filter function for stdout."""
+        def match_word(tweet):
+            # set flag
+            match = False
+
+            # iterate through channel/regex pairs
+            for channel, regex in self.regexdict.iteritems():
+                # check if word in text
+                if regex.search(tweet):
+                    self.slack_app.post_msg(tweet, channel)
+                    match = True
+
+            # debug
+            if self.debug and not match:
+                self.slack_app.post_msg(tweet, 'debug')
+
+        # return wrapped matcher
+        return match_word
 
 
 class TwitterOut(object):
@@ -198,10 +224,7 @@ class TwitterStreamFilter(object):
         if 'slack' in self.filter_config and self._filter_flags['slack']:
             # makae sure entry for slack is type dict
             fwords_dict = self.filter_config['slack']
-            if type(fwords) is dict:
-                # get slack auth
-                self._slack_feed = SlackApp()
-
+            if type(fwords_dict) is dict:
                 # get slack filter
                 slack_filter = SlackOut(fwords_dict, self._debug)
 
@@ -346,7 +369,7 @@ class GHRePTBot(object):
         # start client
         TwitterApp().tweet_text_stream()
 
-    def test_slack_api(self, msg="GHRePTBot Test Message", channel='general'):
+    def test_slack_api(self, msg="GHRePTBot Test Message", channel='debug'):
         """Post test message to Slack."""
         # post
         SlackApp().post_msg(msg, channel)
