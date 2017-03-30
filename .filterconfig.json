@@ -17,7 +17,7 @@
                                  "machinelearning", "machine learning",
                                  "deeplearning", "deep learning", "bigdata",
                                  "neural nets", "neuralnets", "tensorflow",
-                                 "keras", "ML"
+                                 "keras", "ML", "AI"
             ],
 
             "hacking": [
@@ -42,6 +42,6 @@
              "neuralnets", "computer", "computer science", "tensorflow",
              "codejam2017", "algorithm", "data structures", "data",
              "programming", "hacker", "server", "internet", "command-line",
-             "cli"
+             "cli", "AI"
             ]
 }
