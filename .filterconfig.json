@@ -28,6 +28,10 @@
             "entrepreneurship": [
                                  "tech", "entrepreneur", "business",
                                  "technology", "startup"
+            ],
+
+            "bitcoin": [
+                        "bitcoin", "blockhain", "btc", "ethereum"
             ]
 
   },
@@ -38,7 +42,7 @@
              "computers", "computing", "homebrew", "docker", "python3",
              "electron", "javascript", "google", "api", "code", "coding",
              "machinelearning", "machine learning", "deeplearning",
-             "deep learning", "bigdata", "malware", "deep", "neural nets",
+             "deep learning", "bigdata", "malware", "neural nets",
              "neuralnets", "computer", "computer science", "tensorflow",
              "codejam2017", "algorithm", "data structures", "data",
              "programming", "hacker", "server", "internet", "command-line",

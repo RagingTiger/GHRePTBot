@@ -351,7 +351,7 @@ class TwitterApp(object):
             # loop over stream
             for tweet in self._tw_instance.user():
                 try:
-                    func(format_post(tweet))
+                    func(tweet['text'].encode('utf-8'))
                 except KeyError:
                     warn('Data {0} Skipped\n'.format(tweet.keys()), 'green',
                          False)
