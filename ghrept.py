@@ -35,6 +35,14 @@ FILTER_CONFIG = '.filterconfig.json'
 TW_TOKENS = '.twitter_tokens'
 SLK_TOKENS = '.slack_tokens'
 TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
+PST_FRMT_LNK = '''
+>>>> {0}
+* From: twitter.com/{1}
+* Source Refs:  {2}
+* Twitter Refs: {3}'''
+PST_FRMT_NOLNK = '''
+>>>> {0}
+* From: twitter.com/{1}'''
 
 
 # utility funcs
@@ -56,6 +64,39 @@ def warn(text, cval='red', exit=True):
         sys.exit(termcolor.colored(text, cval))
     else:
         print termcolor.colored(text, cval)
+
+
+def format_post(tweet_obj):
+    """Print contents of tweet object."""
+    # check for text and urls
+    tw_urls = tweet_obj['entities']['urls']
+    text = tweet_obj['text'].encode('utf-8')
+
+    # get username
+    tw_user = tweet_obj['user']['screen_name'].encode('utf-8')
+
+    # now get string of urls
+    if tw_urls:
+        # get urls
+        src_url, tco_url = '', ''
+        for url in tw_urls:
+            try:
+                src_url += url['expanded_url'].encode('utf-8') + ' '
+                tco_url += url['url'].encode('utf-8') + ' '
+            except AttributeError:
+                continue
+
+        if src_url and tco_url:
+            post = PST_FRMT_LNK.format(text, tw_user, src_url, tco_url)
+        else:
+            post = PST_FRMT_NOLNK.format(text, tw_user)
+
+    else:
+        # no links
+        post = PST_FRMT_NOLNK.format(text, tw_user)
+
+    # get formatted post
+    return post
 
 
 # classes
@@ -112,6 +153,9 @@ class TerminalOut(object):
             # highlight words
             text = re.sub(r'\b{0}\b'.format(match),
                           '\x1b[31m{0}\x1b[33m'.format(match), text)
+
+        # get http/https
+        # links_exp = re.compile(r'\bhttp[s]?://[^ ]*', re.I)
 
         # get highlighted text
         print '{0}\n'.format(termcolor.colored(text, 'yellow'))
@@ -307,7 +351,7 @@ class TwitterApp(object):
             # loop over stream
             for tweet in self._tw_instance.user():
                 try:
-                    func(tweet['text'].encode('utf-8'))
+                    func(format_post(tweet))
                 except KeyError:
                     warn('Data {0} Skipped\n'.format(tweet.keys()), 'green',
                          False)
@@ -377,7 +421,8 @@ class GHRePTBot(object):
 
     def test_highlight(self, text):
         # words to match
-        words = ["at", "the", "he", "she", "a", "in", "on", "with", "is"]
+        words = ["at", "the", "he", "she", "a", "in", "on", "with", "is",
+                 "what", "you", "about"]
 
         # highlight
         TerminalOut.tweet_highlight(text, words)
