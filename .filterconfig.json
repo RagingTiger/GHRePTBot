@@ -32,6 +32,10 @@
 
             "bitcoin": [
                         "bitcoin", "blockchain", "btc", "ethereum"
+            ],
+
+            "distributed": [
+                            "distributed", "decentralized", "golem"
             ]
 
   },
