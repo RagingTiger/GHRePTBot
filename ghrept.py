@@ -120,6 +120,9 @@ class TerminalOut(object):
         # get regex
         self.regex = compile_regex(match_words)
 
+        # store user format string
+        self._usr_frmt = 'twitter.com/{0}'
+
     def make_filter(self):
         """Return a custom filter function for stdout."""
         def match_word(tweet):
@@ -137,6 +140,7 @@ class TerminalOut(object):
         tw_text = self.tweet_highlight(tweet_obj['text'].encode('utf-8'),
                                        word_list)
         tw_user = tweet_obj['user']['screen_name'].encode('utf-8')
+        tw_user = self._usr_frmt.format(tw_user)
         tw_urls = tweet_obj['entities']['urls']
 
         # get urls
