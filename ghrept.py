@@ -35,14 +35,8 @@ FILTER_CONFIG = '.filterconfig.json'
 TW_TOKENS = '.twitter_tokens'
 SLK_TOKENS = '.slack_tokens'
 TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
-PST_FRMT_LNK = '''
->>>> {0}
-* From: twitter.com/{1}
-* Source Refs:  {2}
-* Twitter Refs: {3}'''
-PST_FRMT_NOLNK = '''
->>>> {0}
-* From: twitter.com/{1}'''
+PST_FRMT_LNK = '{0} | From: twitter.com/{1}, Refs: {2}'
+PST_FRMT_NOLNK = '{0} | From: twitter.com/{1}'
 
 
 # utility funcs
@@ -130,12 +124,42 @@ class TerminalOut(object):
         """Return a custom filter function for stdout."""
         def match_word(tweet):
             # check if word in text
-            if self.regex.search(tweet):
-                self.tweet_highlight(tweet, self.mwords)
+            if self.regex.search(tweet['text'].encode('utf-8')):
+                self.terminal_outlet(tweet, self.mwords)
             elif self.debug:
-                colortxt(tweet, 'white')
+                colortxt(tweet['text'].encode('utf-8'), 'white')
         # return wrapped matcher
         return match_word
+
+    def terminal_outlet(self, tweet_obj, word_list):
+        """Take in tweet object and prepare/format for terminal stdout."""
+        # get text, username, and twitter links
+        tw_text = self.tweet_highlight(tweet_obj['text'].encode('utf-8'),
+                                       word_list)
+        tw_user = tweet_obj['user']['screen_name'].encode('utf-8')
+        tw_urls = tweet_obj['entities']['urls']
+
+        # get urls
+        if tw_urls:
+            # get urls
+            tco_url = ''
+            for url in tw_urls:
+                try:
+                    tco_url += url['url'].encode('utf-8') + ' '
+                except AttributeError:
+                    continue
+
+            if tco_url:
+                post = PST_FRMT_LNK.format(tw_text, tw_user, tco_url)
+            else:
+                post = PST_FRMT_NOLNK.format(tw_text, tw_user)
+
+        else:
+            # no links
+            post = PST_FRMT_NOLNK.format(tw_text, tw_user)
+
+        # print out post
+        print '{0}\n'.format(termcolor.colored(post, 'yellow'))
 
     @staticmethod
     def tweet_highlight(text, word_list):
@@ -158,8 +182,7 @@ class TerminalOut(object):
         # links_exp = re.compile(r'\bhttp[s]?://[^ ]*', re.I)
 
         # get highlighted text
-        print '{0}\n'.format(termcolor.colored(text, 'yellow'))
-
+        return text
 
 class SlackOut(object):
     """Builds filter function for filtering tweets to Slack."""
@@ -351,7 +374,7 @@ class TwitterApp(object):
             # loop over stream
             for tweet in self._tw_instance.user():
                 try:
-                    func(tweet['text'].encode('utf-8'))
+                    func(tweet)
                 except KeyError:
                     warn('Data {0} Skipped\n'.format(tweet.keys()), 'green',
                          False)
