@@ -35,8 +35,8 @@ FILTER_CONFIG = '.filterconfig.json'
 TW_TOKENS = '.twitter_tokens'
 SLK_TOKENS = '.slack_tokens'
 TSTRM_MSG = '{2}{0}Twitter Stream {1}{0}'.format(29*'-', '{0}', '{1}')
-PST_FRMT_LNK = '{0} | From: twitter.com/{1}, Refs: {2}'
-PST_FRMT_NOLNK = '{0} | From: twitter.com/{1}'
+PST_FRMT_LNK = '{0} | From: {1}, Refs: {2}'
+PST_FRMT_NOLNK = '{0} | From: {1}'
 
 
 # utility funcs
@@ -184,6 +184,7 @@ class TerminalOut(object):
         # get highlighted text
         return text
 
+
 class SlackOut(object):
     """Builds filter function for filtering tweets to Slack."""
     def __init__(self, fwords, debug):
@@ -196,25 +197,64 @@ class SlackOut(object):
         # get keys from dict
         self.regexdict = {k: compile_regex(v) for k, v in fwords.iteritems()}
 
+        # store ref format
+        self._ref_frmt = '<{0}|{1}>'
+        self._usr_frmt = '<https://twitter.com/{0}|@{0}>'
+
     def make_filter(self):
         """Return a custom filter function for stdout."""
         def match_word(tweet):
             # set flag
             match = False
 
+            # get text from tweet
+            tw_text = tweet['text'].encode('utf-8')
+
             # iterate through channel/regex pairs
             for channel, regex in self.regexdict.iteritems():
                 # check if word in text
-                if regex.search(tweet):
-                    self.slack_app.post_msg(tweet, channel)
+                if regex.search(tw_text):
+                    self.slack_app.post_msg(self.format_post(tweet), channel)
                     match = True
 
             # debug
             if self.debug and not match:
-                self.slack_app.post_msg(tweet, 'debug')
+                self.slack_app.post_msg(tw_text, 'debug')
 
         # return wrapped matcher
         return match_word
+
+    def format_post(self, tweet_obj):
+        """Format tweet to post to Slack."""
+        # get text, username, and twitter links
+        tw_text = tweet_obj['text'].encode('utf-8')
+        tw_user = tweet_obj['user']['screen_name'].encode('utf-8')
+        tw_user = self._usr_frmt.format(tw_user)
+        tw_urls = tweet_obj['entities']['urls']
+
+        # get urls
+        if tw_urls:
+            # get urls
+            src_url = ''
+            for i, url in enumerate(tw_urls):
+                try:
+                    link = url['expanded_url'].encode('utf-8')
+                    src_url += self._ref_frmt.format(link, i+1) + ' '
+                except AttributeError:
+                    continue
+
+            if src_url:
+                post = PST_FRMT_LNK.format(tw_text, tw_user, src_url)
+            else:
+                # no urls in list, so no links
+                post = PST_FRMT_NOLNK.format(tw_text, tw_user)
+
+        else:
+            # no links
+            post = PST_FRMT_NOLNK.format(tw_text, tw_user)
+
+        # print out post
+        return post
 
 
 class TwitterOut(object):
@@ -448,7 +488,7 @@ class GHRePTBot(object):
                  "what", "you", "about"]
 
         # highlight
-        TerminalOut.tweet_highlight(text, words)
+        print TerminalOut.tweet_highlight(text, words)
 
     def test_matcher(self, text):
         # words to match
