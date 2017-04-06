@@ -48,7 +48,8 @@
             ],
 
             "javascript": [
-                           "javascript", "node.js", "nodejs", "node", "electron"
+                           "javascript", "node.js", "nodejs", "node",
+                           "electron", "electronjs"
             ],
 
             "datasci": [
