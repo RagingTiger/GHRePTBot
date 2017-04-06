@@ -1,23 +1,19 @@
 {
   "slack": {
              "compsci": [
-                         "git", "github",
-                         "golang", "go", "gopher", "algorithms", "python",
-                         "terminal", "bash", "shell", "unix", "linux",
-                         "software", "developers", "python2", "computers",
-                         "computing", "homebrew", "docker", "python3",
-                         "electron", "javascriptf", "node.js", "google", "api",
+                         "git", "github", "algorithms", "terminal", "bash",
+                         "shell", "unix", "linux", "software", "developers",
+                         "computers", "computing", "homebrew", "google", "api",
                          "code", "coding", "commandline", "computer",
                          "codejam2017", "computer science", "server", "data",
-                         "programming", "data science", "datascience",
-                         "internet", "sysadmin", "command-line", "cli", "ruby"
+                         "programming", "internet", "sysadmin", "command-line",
+                         "cli", "ruby"
              ],
 
              "machinelearning": [
                                  "machinelearning", "machine learning",
-                                 "deeplearning", "deep learning", "bigdata",
-                                 "neural nets", "neuralnets", "tensorflow",
-                                 "keras", "ML", "AI"
+                                 "deeplearning", "deep learning", "neural nets", "neuralnets", "tensorflow", "keras", "ML",
+                                 "AI", "LSTM", "RNN"
             ],
 
             "hacking": [
@@ -37,7 +33,29 @@
 
             "distributed": [
                             "distributed", "decentralized", "golem"
-            ]
+            ],
+
+            "go": [
+                       "golang", "go", "gopher"
+
+            ],
+
+            "python": [
+                       "python", "python2", "python3", "pypi"
+            ],
+
+            "docker": [
+                        "docker", "docker container", "docker containers"
+            ],
+
+            "javascript": [
+                           "javascript", "node.js", "nodejs", "node", "electron"
+            ],
+
+            "datasci": [
+                        "data", "data science", "datascience", "big data",
+                        "bigdata", "analytics", "statistics"
+            ],
 
   },
 	"stdout": [
