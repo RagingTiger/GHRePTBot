@@ -37,7 +37,6 @@
 
             "go": [
                        "golang", "go", "gopher"
-
             ],
 
             "python": [
@@ -55,7 +54,7 @@
             "datasci": [
                         "data", "data science", "datascience", "big data",
                         "bigdata", "analytics", "statistics"
-            ],
+            ]
 
   },
 	"stdout": [
