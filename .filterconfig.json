@@ -55,6 +55,10 @@
             "datasci": [
                         "data", "data science", "datascience", "big data",
                         "bigdata", "analytics", "statistics"
+            ],
+
+            "style": [
+                      "streetstyle", "londonstreetstyle", "street style"
             ]
 
   },
