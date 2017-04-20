@@ -7,7 +7,7 @@
                          "code", "coding", "commandline", "computer",
                          "codejam2017", "computer science", "server", "data",
                          "programming", "internet", "sysadmin", "command-line",
-                         "cli", "ruby"
+                         "cli", "ruby", "app", "systems"
              ],
 
              "machinelearning": [
@@ -55,7 +55,7 @@
 
             "datasci": [
                         "data", "data science", "datascience", "big data",
-                        "bigdata", "analytics", "statistics"
+                        "bigdata", "analytics", "statistics", "analysis"
             ],
 
             "style": [

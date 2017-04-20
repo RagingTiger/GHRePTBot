@@ -60,39 +60,6 @@ def warn(text, cval='red', exit=True):
         print termcolor.colored(text, cval)
 
 
-def format_post(tweet_obj):
-    """Print contents of tweet object."""
-    # check for text and urls
-    tw_urls = tweet_obj['entities']['urls']
-    text = tweet_obj['text'].encode('utf-8')
-
-    # get username
-    tw_user = tweet_obj['user']['screen_name'].encode('utf-8')
-
-    # now get string of urls
-    if tw_urls:
-        # get urls
-        src_url, tco_url = '', ''
-        for url in tw_urls:
-            try:
-                src_url += url['expanded_url'].encode('utf-8') + ' '
-                tco_url += url['url'].encode('utf-8') + ' '
-            except AttributeError:
-                continue
-
-        if src_url and tco_url:
-            post = PST_FRMT_LNK.format(text, tw_user, src_url, tco_url)
-        else:
-            post = PST_FRMT_NOLNK.format(text, tw_user)
-
-    else:
-        # no links
-        post = PST_FRMT_NOLNK.format(text, tw_user)
-
-    # get formatted post
-    return post
-
-
 # classes
 class ConfigTwitterApp(object):
     pass
@@ -305,11 +272,11 @@ class TwitterStreamFilter(object):
 
     def _setup_filters(self):
         """Get list of all the filter functions you will be using."""
-        # start up Twitter OAuth
-        self._twitter_feed = TwitterApp()
-
         # list of filters
         filter_list = []
+
+        # set initial debugmode
+        debugmode = False
 
         # check loaded file
         if 'twitter' in self.filter_config and self._fflags['twitter']:
@@ -325,6 +292,10 @@ class TwitterStreamFilter(object):
             if type(fwords) is list:
                 # check debug
                 debug = True if self._fflags['stdout'] == 'debug' else False
+
+                # set debug mode
+                debugmode = debugmode or debug
+
                 # get stdout filter
                 stdout_filter = TerminalOut(fwords, debug)
 
@@ -338,11 +309,17 @@ class TwitterStreamFilter(object):
                 # check debug
                 debug = True if self._fflags['slack'] == 'debug' else False
 
+                # set debug mode
+                debugmode = debugmode or debug
+
                 # get slack filter
                 slack_filter = SlackOut(fwords_dict, debug)
 
                 # add to func list
                 filter_list.append(slack_filter.make_filter())
+
+        # start up Twitter OAuth
+        self._twitter_feed = TwitterApp(debugmode)
 
         # return list of filter funcs
         return filter_list
@@ -382,7 +359,10 @@ class SlackApp(object):
 
 class TwitterApp(object):
     """Class to implement a basic Twitter client for use with GHRePTBot."""
-    def __init__(self):
+    def __init__(self, debug):
+        # set debugmode
+        self.debugmode = debug
+
         # get OAuth
         oauth = self._twitter_oauth()
 
@@ -420,8 +400,9 @@ class TwitterApp(object):
                 try:
                     func(tweet)
                 except KeyError:
-                    warn('Data {0} Skipped\n'.format(tweet.keys()), 'green',
-                         False)
+                    if self.debugmode:
+                        warn('Data {0} Skipped\n'.format(tweet.keys()),
+                             'green', False)
         # exit on Ctrl-C
         except KeyboardInterrupt:
             warn(TSTRM_MSG.format('Stopped', '\n\n'))
