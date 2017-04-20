@@ -7,7 +7,7 @@
                          "code", "coding", "commandline", "computer",
                          "codejam2017", "computer science", "server", "data",
                          "programming", "internet", "sysadmin", "command-line",
-                         "cli", "ruby", "app", "systems", "apps"
+                         "cli", "ruby", "app", "systems", "apps", "hardware"
              ],
 
              "machinelearning": [
@@ -33,7 +33,8 @@
             ],
 
             "distributed": [
-                            "distributed", "decentralized", "golem"
+                            "distributed", "decentralized", "golem",
+                            "distributing"
             ],
 
             "go": [
@@ -60,6 +61,15 @@
 
             "style": [
                       "streetstyle", "londonstreetstyle", "street style"
+            ],
+
+            "trading": [
+                        "trading", "stock", "stocks"
+            ],
+
+            "finance": [
+                        "money", "finance", "investing", "reinvesting",
+                        "wealth", "fintech"
             ]
 
   },
