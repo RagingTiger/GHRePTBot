@@ -69,7 +69,11 @@
 
             "finance": [
                         "finance", "investing", "reinvesting",
-                        "wealth", "fintech"
+                        "wealth", "fintech", "investment", "financial"
+            ],
+
+            "general": [
+                        "ghreptbot"
             ]
 
   },
