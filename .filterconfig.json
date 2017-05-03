@@ -72,6 +72,10 @@
                         "fintech", "investment"
             ],
 
+            "realestate": [
+                           "realestate", "property", "real estate"
+            ],
+
             "general": [
                         "ghreptbot"
             ]
