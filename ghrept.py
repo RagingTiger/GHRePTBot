@@ -453,8 +453,12 @@ class GHRePTBot(object):
         #     ConfigSlackApp(SLK_TOKENS if slack == '' else slack)
         pass
 
-    def setup(self):
+    def setenv(self):
         """Export necessary tokens to run GHRePTBot."""
+        pass
+
+    def setup(self):
+        """Walkthrough setup process for Twitter/Slack."""
         pass
 
     def test_twitter_api(self):
