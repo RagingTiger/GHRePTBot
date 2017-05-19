@@ -40,6 +40,14 @@ PST_FRMT_NOLNK = '{0} | From: {1}'
 
 
 # utility funcs
+def token_reader(token_file):
+    """Utility function to read token files."""
+    with open(token_file, 'r') as token:
+        for line in token:
+            tokenpair = line.split('=')
+            os.environ[tokenpair[0]] = tokenpair[1].strip('\n')
+
+
 def compile_regex(words):
     """Adds word boundaries and returns compiled regex."""
     blocks = [r'\b{0}\b'.format(w) for w in words]
@@ -414,6 +422,20 @@ class GHRePTBot(object):
         # TODO
         colortxt(BANNER, 'green')
 
+    def _setenv(self, twitter_token=TW_TOKENS, slack_token=SLK_TOKENS):
+        """Export necessary tokens to run GHRePTBot."""
+        # first read twitter token
+        try:
+            token_reader(twitter_token)
+        except IOError:
+            warn('Twitter token file not found. Check name/path of file.')
+
+        # second read in slack_token
+        try:
+            token_reader(slack_token)
+        except IOError:
+            warn('Slack token file not found. Check name/path of file.')
+
     def help(self, slack=None, twitter=None, stdout=None):
         """Help method for GHRePTBot. Prints usage on default."""
         pass
@@ -421,6 +443,9 @@ class GHRePTBot(object):
     def filter(self, configfile=FILTER_CONFIG, slack=None, twitter=None,
                stdout=None):
         """Simple method to filter and post tweets."""
+        # set environment
+        self._setenv()
+
         # create filterflags dict
         fflags = {'slack': slack, 'twitter': twitter, 'stdout': stdout}
 
@@ -451,10 +476,6 @@ class GHRePTBot(object):
         #
         # if slack:
         #     ConfigSlackApp(SLK_TOKENS if slack == '' else slack)
-        pass
-
-    def setenv(self):
-        """Export necessary tokens to run GHRePTBot."""
         pass
 
     def setup(self):

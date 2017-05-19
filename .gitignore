@@ -6,3 +6,5 @@
 venv/
 bin/
 .DS_Store
+.slack_tokens
+.twitter_tokens
