@@ -430,7 +430,7 @@ class GHRePTBot(object):
         except IOError:
             warn('Twitter token file not found. Check name/path of file.')
 
-        # second read in slack_token
+        # second read slack_token
         try:
             token_reader(slack_token)
         except IOError:
