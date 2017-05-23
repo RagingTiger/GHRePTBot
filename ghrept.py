@@ -441,10 +441,11 @@ class GHRePTBot(object):
         pass
 
     def filter(self, configfile=FILTER_CONFIG, slack=None, twitter=None,
-               stdout=None):
+               stdout=None, env=None):
         """Simple method to filter and post tweets."""
         # set environment
-        self._setenv()
+        if not env:
+            self._setenv()
 
         # create filterflags dict
         fflags = {'slack': slack, 'twitter': twitter, 'stdout': stdout}
