@@ -50,7 +50,7 @@ def token_reader(token_file):
 
 def compile_regex(words):
     """Adds word boundaries and returns compiled regex."""
-    blocks = [r'\b{0}\b'.format(w) for w in words]
+    blocks = [r'\b{0}\b'.format(w.encode('utf-8')) for w in words]
     return re.compile('|'.join(blocks), flags=re.I)
 
 

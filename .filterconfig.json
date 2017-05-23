@@ -81,7 +81,8 @@
             ],
 
             "china": [
-                      "china", "chinese"
+                      "china", "chinese", "shenzhen", "shanghai", "beijing",
+                      "hongkong"
             ],
 
             "general": [
@@ -101,5 +102,5 @@
              "codejam2017", "algorithm", "data structures", "data",
              "programming", "hacker", "server", "internet", "command-line",
              "cli", "AI"
-            ]
+           ]
 }
