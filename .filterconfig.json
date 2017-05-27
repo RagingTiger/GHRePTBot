@@ -85,6 +85,10 @@
                       "hongkong"
             ],
 
+            "slack-app": [
+                          "slack"
+            ],
+
             "general": [
                         "ghreptbot"
             ]
