@@ -1,11 +1,11 @@
 ## About
 _**G**it**H**ub **Re**pos**P**osted on **T**witter_ (i.e. **GHRePT**) is a
-simple _Twitter bot_. It was originaly designed to _greps tweets_ for the mention of **GitHub**. Why?
+simple _Twitter bot_. It was originaly designed to _grep tweets_ for the mention of **GitHub**. Why?
 Because I wanted a way to _filter my Twitter_ for all the **GitHub** repos
 being posted, and what better inspiration for such a tool than [grep](https://en.wikipedia.org/wiki/Grep). 
 
 After accomplishing the "grep"-ing of GitHub-related tweets, I realized I could just as easily abstract it to other keywords
-(but the name stuck because I like the way it sound).
+(but the name stuck because I like the way it sounds).
 
 ## Install
 First download the repo, `cd` into it, and setup the virtual environment:
